@@ -2,45 +2,85 @@
 
 import { useEffect, useState } from "react";
 
+/* ================= USER TYPE ================= */
 export interface User {
   id: number;
   name: string;
   email: string;
-  address: {
-    city: string;
-  };
-  company: {
+  username?: string;
+  phone?: string;
+  website?: string;
+  company?: {
     name: string;
+  };
+  address?: {
+    city: string;
   };
 }
 
 export function useUsers() {
   const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [localUsers, setLocalUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
+  /* ================= FETCH API USERS ================= */
   useEffect(() => {
-    async function fetchUsers() {
+    let isMounted = true;
+
+    const fetchUsers = async () => {
       try {
-        const res = await fetch(
+        setLoading(true);
+
+        const response = await fetch(
           "https://jsonplaceholder.typicode.com/users"
         );
 
-        if (!res.ok) {
+        if (!response.ok) {
           throw new Error("Failed to fetch users");
         }
 
-        const data = await res.json();
-        setUsers(data);
+        const data: User[] = await response.json();
+
+        if (isMounted) {
+          setUsers(data);
+        }
       } catch (err: any) {
-        setError(err.message);
+        if (isMounted) {
+          setError(err.message || "Something went wrong");
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
-    }
+    };
 
     fetchUsers();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
-  return { users, loading, error };
+  /* ================= LOAD LOCAL USERS ================= */
+  useEffect(() => {
+    const storedUsers = localStorage.getItem("localUsers");
+
+    if (storedUsers) {
+      try {
+        const parsed: User[] = JSON.parse(storedUsers);
+        setLocalUsers(parsed);
+      } catch {
+        setLocalUsers([]);
+      }
+    }
+  }, []);
+
+  return {
+    users,
+    localUsers,
+    loading,
+    error,
+  };
 }

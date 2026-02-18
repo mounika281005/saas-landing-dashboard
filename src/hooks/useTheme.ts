@@ -2,15 +2,13 @@
 
 import { useEffect, useState } from "react";
 
-export function useTheme() {
-  const [theme, setTheme] = useState<"light" | "dark">("dark");
+type Theme = "light" | "dark";
 
-  // Load from localStorage
+export function useTheme() {
+  const [theme, setTheme] = useState<Theme>("dark");
+
   useEffect(() => {
-    const savedTheme = localStorage.getItem("theme") as
-      | "light"
-      | "dark"
-      | null;
+    const savedTheme = localStorage.getItem("theme") as Theme | null;
 
     if (savedTheme) {
       setTheme(savedTheme);
@@ -21,9 +19,9 @@ export function useTheme() {
     }
   }, []);
 
-  // Update theme
   const toggleTheme = () => {
-    const newTheme = theme === "dark" ? "light" : "dark";
+    const newTheme: Theme = theme === "dark" ? "light" : "dark";
+
     setTheme(newTheme);
     localStorage.setItem("theme", newTheme);
 

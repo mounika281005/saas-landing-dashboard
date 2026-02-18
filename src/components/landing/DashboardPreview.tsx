@@ -26,7 +26,7 @@ export default function DashboardPreview() {
             <div className="mt-14 flex flex-col items-center gap-6 w-full">
 
               <Image
-                src="/icons/line.png"
+                src="/icons/LineLeft.png"
                 alt=""
                 width={140}
                 height={8}
@@ -79,7 +79,7 @@ export default function DashboardPreview() {
               />
 
               <Image
-                src="/icons/line.png"
+                src="/icons/LineCenter.png"
                 alt=""
                 width={180}
                 height={10}
